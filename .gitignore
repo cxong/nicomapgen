@@ -2,6 +2,7 @@ nimcache/
 nimblecache/
 htmldocs/
 
+.DS_Store
 *.dll
 *.exe
 nicomapgen
