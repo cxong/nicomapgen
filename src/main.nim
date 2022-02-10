@@ -2,19 +2,18 @@ import nico
 import nico/backends/common
 import std/strutils
 
+import ./def
+import ./map
+
 const orgName = "congusbongus"
 const appName = "nicomapgen"
 
 var buttonDown = false
-const SpriteW = 16
-const SpriteH = 16
+var m = map.Map(w: 16, h: 16)
 const ScreenW = 16*16
 const ScreenH = 16*16
 const ScreenScale = 3
 const PaletteDawnbringer = "140c1c44243430346d4e4a4e854c30346524d04648757161597dced27d2c8595a16daa2cd2aa996dc2cadad45edeeed6"
-const SheetFloor = 0
-const SheetWall = 1
-const SheetPlayer = 2
 
 func loadPaletteFromHexString*(s: string): Palette =
   var palette: Palette
@@ -34,28 +33,14 @@ proc gameInit() =
   loadSpriteSheet(SheetFloor, "Objects/Floor.png", SpriteW, SpriteH)
   loadSpriteSheet(SheetWall, "Objects/Wall.png", SpriteW, SpriteH)
   loadSpriteSheet(SheetPlayer, "Characters/Player0.png", SpriteW, SpriteH)
-  newMap(0, 16, 16, SpriteW, SpriteH)
-  newMap(1, 16, 16, SpriteW, SpriteH)
-  for y in 0..<16:
-    for x in 0..<16:
-      if ((x == 1 or x == 14) and 1 <= y and y <= 14) or ((y == 1 or y == 14) and 1 <= x and x <= 14):
-        setMap(1)
-        mset(x, y, 128)
-      else:
-        setMap(0)
-        mset(x, y, 155)
+  m.init()
 
 proc gameUpdate(dt: float32) =
   buttonDown = btn(pcA)
 
 proc gameDraw() =
   cls()
-  setMap(0)
-  setSpritesheet(SheetFloor)
-  mapDraw(0, 0, SpriteW, SpriteH, 0, 0)
-  setMap(1)
-  setSpritesheet(SheetWall)
-  mapDraw(0, 0, SpriteW, SpriteH, 0, 0)
+  m.draw()
   setColor(if buttonDown: 7 else: 3)
   printc("welcome to " & appName, screenWidth div 2, screenHeight div 2)
   setSpritesheet(SheetPlayer)
