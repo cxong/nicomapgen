@@ -9,7 +9,7 @@ const orgName = "congusbongus"
 const appName = "nicomapgen"
 
 var buttonDown = false
-var m = map.Map(w: 16, h: 16)
+var m = map.newTileMap(16, 16)
 const ScreenW = 16*16
 const ScreenH = 16*16
 const ScreenScale = 3
@@ -40,7 +40,7 @@ proc gameUpdate(dt: float32) =
 
 proc gameDraw() =
   cls()
-  m.draw()
+  map.drawTileMap()
   setColor(if buttonDown: 7 else: 3)
   printc("welcome to " & appName, screenWidth div 2, screenHeight div 2)
   setSpritesheet(SheetPlayer)
