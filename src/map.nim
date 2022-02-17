@@ -7,7 +7,7 @@ type
   Tile {.pure.} = enum
     Nothing, Grass, Wood
 
-const TileSprites = {Nothing: 20, Grass: 133, Wood: 127}.toTable
+const TileSprites = {Nothing: 0, Grass: 133, Wood: 127}.toTable
 const TileIsWall = {Nothing: false, Grass: false, Wood: true}.toTable
 
 type

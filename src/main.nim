@@ -13,7 +13,8 @@ var m = map.newTileMap(16, 16)
 const ScreenW = 16*16
 const ScreenH = 16*16
 const ScreenScale = 3
-const PaletteDawnbringer = "140c1c44243430346d4e4a4e854c30346524d04648757161597dced27d2c8595a16daa2cd2aa996dc2cadad45edeeed6"
+# Add black since first colour is always transparent and this matches the transparent pixels in PNGs
+const PaletteDawnbringer = "000000140c1c44243430346d4e4a4e854c30346524d04648757161597dced27d2c8595a16daa2cd2aa996dc2cadad45edeeed6"
 
 func loadPaletteFromHexString*(s: string): Palette =
   var palette: Palette
