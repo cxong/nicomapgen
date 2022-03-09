@@ -3,13 +3,15 @@ import nico/backends/common
 import std/strutils
 
 import ./def
+import ./fill
 import ./map
 
 const orgName = "congusbongus"
 const appName = "nicomapgen"
 
 var buttonDown = false
-var m = map.newTileMap(16, 16)
+var m = map.initTileMap(16, 16)
+var algo = fill.fillAlgo(Grass)
 const ScreenW = 16*16
 const ScreenH = 16*16
 const ScreenScale = 3
@@ -37,7 +39,9 @@ proc gameInit() =
   m.init()
 
 proc gameUpdate(dt: float32) =
-  buttonDown = btn(pcA)
+  if not finished(algo):
+    var res = algo(m.ground)
+    res.layer.updateTile(res.x, res.y)
 
 proc gameDraw() =
   cls()

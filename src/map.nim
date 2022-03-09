@@ -4,25 +4,29 @@ import nico
 import ./def
 
 type
-  Tile {.pure.} = enum
+  Tile* {.pure.} = enum
     Nothing, Grass, Wood
 
 const TileSprites = {Nothing: 0, Grass: 133, Wood: 127}.toTable
 const TileIsWall = {Nothing: false, Grass: false, Wood: true}.toTable
 
 type
-  Layer = object
-    tiles: seq[Tile]
-    w: int
-    h: int
+  Layer* = object
+    mapId: int
+    tiles*: seq[Tile]
+    w*: int
+    h*: int
 
-func newLayer(w, h: int): Layer =
-  return Layer(tiles: newSeq[Tile](w * h), w: w, h: h)
+func initLayer(mapId, w, h: int): Layer =
+  result.mapId = mapId
+  result.tiles = newSeq[Tile](w * h)
+  result.w = w
+  result.h = h
 
-func getTile(l: Layer, x, y: int): Tile =
+func getTile*(l: Layer, x, y: int): Tile =
   return l.tiles[x + y*l.w]
 
-func setTile(l: var Layer, x, y: int, tile: Tile) =
+func setTile*(l: var Layer, x, y: int, tile: Tile) =
   l.tiles[x + y*l.w] = tile
 
 func isOutside(l: Layer, x, y: int): bool =
@@ -174,8 +178,8 @@ type
   TileMap* = object
     w*: int
     h*: int
-    ground: Layer
-    walls: Layer
+    ground*: Layer
+    walls*: Layer
 
 func getMsetT(l: Layer, x, y: int): int =
   let tile = l.getTile(x, y)
@@ -186,17 +190,34 @@ func getMsetT(l: Layer, x, y: int): int =
   let spriteOffset = (if isWall: getWallTile(l, x, y, tile) else: getFloorTile(l, x, y, tile))
   return baseSprite + spriteOffset
 
-proc newTileMap*(w, h: int): TileMap =
-  var m = TileMap(w: w, h: h, ground: newLayer(w, h), walls: newLayer(w, h))
-  newMap(0, m.w, m.h, SpriteW, SpriteH)
-  newMap(1, m.w, m.h, SpriteW, SpriteH)
-  for y in 0..<m.h:
-    for x in 0..<m.w:
-      m.ground.setTile(x, y, Grass)
-      m.walls.setTile(x, y, Nothing)
-      if ((x == 1 or x == 14) and 1 <= y and y <= 14) or ((y == 1 or y == 14) and 1 <= x and x <= 14):
-        m.walls.setTile(x, y, Wood)
-  return m
+proc updateTile*(l: var Layer, x, y: int) =
+  setMap(l.mapId)
+  for y in max(0, y-1)..min(l.h, y+1):
+    if y < 0 or y >= l.h:
+      continue
+    for x in max(0, x-1)..min(l.w, x+1):
+      if x < 0 or x >= l.w:
+        continue
+      let t = l.getMsetT(x, y)
+      mset(x, y, t)
+
+iterator neighbors*(l: Layer, x, y: int): (int, int) =
+  if y > 0:
+    yield (x, y-1)
+  if x < l.w - 1:
+    yield (x+1, y)
+  if y < l.h - 1:
+    yield (x, y+1)
+  if x > 0:
+    yield (x-1, y)
+
+proc initTileMap*(w, h: int): TileMap =
+  result.w = w
+  result.h = h
+  result.ground = initLayer(0, w, h)
+  result.walls = initLayer(1, w, h)
+  newMap(0, w, h, SpriteW, SpriteH)
+  newMap(1, w, h, SpriteW, SpriteH)
 
 proc init*(m: var TileMap) =
   setMap(0)
