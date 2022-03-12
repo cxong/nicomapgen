@@ -5,10 +5,10 @@ import ./def
 
 type
   Tile* {.pure.} = enum
-    Nothing, Grass, Wood
+    Nothing, Grass, Wood, WoodFloor
 
-const TileSprites = {Nothing: 0, Grass: 133, Wood: 127}.toTable
-const TileIsWall = {Nothing: false, Grass: false, Wood: true}.toTable
+const TileSprites = {Nothing: 0, Grass: 133, Wood: 127, WoodFloor: 322}.toTable
+const TileIsWall = {Nothing: false, Grass: false, Wood: true, WoodFloor: false}.toTable
 
 type
   Layer* = object
